@@ -25,7 +25,7 @@
     <link rel="alternative" href="/atom.xml" title="puppy" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/img/head.jpg">
   
   
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png">
@@ -76,8 +76,6 @@
 				<li><a href="/" target="_blank">主页</a></li>
 			
 				<li><a href="https://puppy.xin/blog/" target="_blank">技术笔记</a></li>
-			
-				<li><a href="/tags/%E9%9A%8F%E7%AC%94/" target="_blank">随笔</a></li>
 			
 			</ul>
 		</nav>
@@ -136,8 +134,6 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
@@ -152,14 +148,12 @@
 			</nav>
 
 			<nav class="header-menu js-header-menu">
-				<ul style="width: 70%">
+				<ul style="width: 50%">
 				
 				
-					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
+					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 33.333333333333336%"><a target="_blank" rel="noopener" href="https://puppy.xin/blog/">技术笔记</a></li>
-		        
-					<li style="width: 33.333333333333336%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+					<li style="width: 50%"><a target="_blank" rel="noopener" href="https://puppy.xin/blog/">技术笔记</a></li>
 		        
 				</ul>
 			</nav>
@@ -186,7 +180,7 @@
   
     <h1 itemprop="name">
 	
-	  <a class="article-title" href="/2025/02/27/linuxstudy/" target="_blank">linuxstudy</a>
+	  <a class="article-title" href="/2025/02/28/linuxstudy/" target="_blank">无文档Linux服务器部署文件与Nginx配置查找</a>
   
     </h1>
   
@@ -194,8 +188,8 @@
 
   
   
-<a href="/2025/02/27/linuxstudy/" class="archive-article-date">
-        <time datetime="2025-02-27T03:55:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-02-27</time>
+<a href="/2025/02/28/linuxstudy/" class="archive-article-date">
+        <time datetime="2025-02-28T03:55:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-02-28</time>
 </a>
 
   
@@ -207,9 +201,59 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    <p>最近有个需求要求我连下公司的linux服务器。因为之前没有用过，所以就学习下linux，顺便记录一些学习笔记。</p>
-<h2 id="安装finalshell并进行连接"><a href="#安装finalshell并进行连接" class="headerlink" title="安装finalshell并进行连接"></a>安装finalshell并进行连接</h2><p>因为我用的是windows，所以需要安装finalshell <a target="_blank" rel="noopener" href="https://www.hostbuf.com/t/988.html">下载地址</a> 。这个软件可以远程连接linux服务器。根据自己的电脑选择合适的版本就行。</p>
-<p>然后进行连接创建，选择ssh连接。如下图所示：<br><img src="/finalshell.png" alt="finalshell连接"></p>
+    <p>&emsp;&emsp;近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：  </p>
+<ol>
+<li>定位项目文件存储路径</li>
+<li>找到Nginx配置文件并解析Nginx配置映射关系</li>
+</ol>
+<p>&emsp;&emsp;此过程涉及一些Linux系统操作，由于我一直使用的是Windows环境进行开发，没有用过Linux系统。所以也借此机会学习下linux的一些基础指令，顺便记录一些学习笔记。</p>
+<h3 id="安装finalshell并进行连接"><a href="#安装finalshell并进行连接" class="headerlink" title="安装finalshell并进行连接"></a>安装finalshell并进行连接</h3><p>&emsp;&emsp;因为我用的是windows，所以需要安装finalshell <a target="_blank" rel="noopener" href="https://www.hostbuf.com/t/988.html">下载地址</a> 。这个软件可以远程连接linux服务器。根据自己的电脑选择合适的版本就行。</p>
+<p>&emsp;&emsp;然后进行连接创建，选择ssh连接。如下图所示：<br><img src="/finalshell.png" alt="finalshell连接"></p>
+<p>&emsp;&emsp;输入服务器ip地址，端口，用户名，密码，然后点击连接。</p>
+<h3 id="定位项目文件路径"><a href="#定位项目文件路径" class="headerlink" title="定位项目文件路径"></a>定位项目文件路径</h3><p>&emsp;&emsp;因为项目有运行node服务和nginx服务，所以我先把机子上所有的服务进程找出来看看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps aux <span class="comment">#显示所有包含其他使用者的进程</span></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">ps aux | grep -E <span class="string">&#x27;node|nginx&#x27;</span> <span class="comment"># 找到所有进程并对node和nginx高亮展示</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;结果如下图所示<br><img src="/./linuxstudy/bwtest.png" alt="ps aux"></p>
+<p>&emsp;&emsp;框起来的这几个进程很像是测试环境运行的node服务，根据上面的运行路径，找到bwtest文件看一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -a /data/bwtest/project <span class="comment">#查看目录下所有文件</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;这些文件基本和我在git上看到的项目仓库基本一致，所以可以基本断定这就是项目文件的存储路径了。</p>
+<h3 id="找到Nginx配置文件并解析Nginx配置映射关系"><a href="#找到Nginx配置文件并解析Nginx配置映射关系" class="headerlink" title="找到Nginx配置文件并解析Nginx配置映射关系"></a>找到Nginx配置文件并解析Nginx配置映射关系</h3><p>&emsp;&emsp;这里的话可以先尝试通过进程id来找到运行路径，然后再获取该进程对应的配置文件路径</p>
+<h5 id="查找nginx服务进程"><a href="#查找nginx服务进程" class="headerlink" title="查找nginx服务进程"></a>查找nginx服务进程</h5><p>&emsp;查找Nginx服务进程有两种方式</p>
+<ol>
+<li><strong>上文用过的通过 <font color="red">ps aux | grep nginx</font> 找到所有的进程</strong></li>
+</ol>
+<p><img src="/./linuxstudy/nginx.png" alt="nginx"></p>
+<ol start="2">
+<li><strong>通过端口找进程</strong><br>nginx常用端口一般为80</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -nlp | grep 80 <span class="comment">#显示端口80的连接情况</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;可以看到Ngigx的进程pid为<strong>20577</strong><br><img src="/./linuxstudy/port.png" alt="nginx port"></p>
+<h5 id="通过进程id查找Nginx配置文件"><a href="#通过进程id查找Nginx配置文件" class="headerlink" title="通过进程id查找Nginx配置文件"></a>通过进程id查找Nginx配置文件</h5><p>&emsp;&emsp;在Linux中，每个进程的信息都存储在&#x2F;proc目录下，进程ID对应的子目录里会有详细信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /proc/20577/exe <span class="comment">#查看进程20577的运行路径</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./linuxstudy/usr.png" alt="运行路径"></p>
+<p>&emsp;&emsp;运行路径为<strong>usr&#x2F;sbin&#x2F;nginx</strong>,然后通过运行路径查找Nginx配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/nginx -t <span class="comment">#使用-t参数就可以获取该进程对应的配置文件路径</span></span><br></pre></td></tr></table></figure>
+
+<p>这里可以看到nginx的配置文件路径为**&#x2F;etc&#x2F;nginx&#x2F;nginx.conf**<br><img src="/./linuxstudy/sbin.png" alt="配置文件路径"><br>&emsp;&emsp;到这里基本上逆向查找的文件都找到了。</p>
+<h3 id="Nginx配置文件默认路径"><a href="#Nginx配置文件默认路径" class="headerlink" title="Nginx配置文件默认路径"></a>Nginx配置文件默认路径</h3><p>&emsp;&emsp;在Linux中，Nginx的配置文件一般位于<strong>etc&#x2F;nginx&#x2F;nginx.conf</strong>。这个路径是Nginx的默认配置文件路径。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/etc/nginx/</span><br><span class="line">├── nginx.conf              # 必加载主配置</span><br><span class="line">├── mime.types              # MIME类型映射</span><br><span class="line">├── conf.d/                 # 标准模块化配置目录</span><br><span class="line">├── sites-enabled/          # 加载符号链接的站点配置</span><br><span class="line">├── modules-enabled/*.conf  # 动态模块配置</span><br><span class="line">└── fastcgi_params          # FastCGI参数文件</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;这里得提一下<strong>conf.d</strong>目录。conf.d目录是Nginx的配置文件目录，主要作用：</p>
+<ul>
+<li>配置分离： 将不同业务&#x2F;站点的配置拆分为独立文件</li>
+<li>动态加载：方便通过增删文件管理配置（无需修改主配置文件）</li>
+<li>规范管理：通常存放server块配置、反向代理规则等</li>
+</ul>
+<p><strong>&#x2F;etc&#x2F;nginx&#x2F;nginx.conf 中通常包含：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">include /etc/nginx/conf.d/*.conf; # 加载conf.d目录下所有的.conf文件。按文件名字母序加载（00-default.conf会比api.conf先加载）</span><br><span class="line">include /etc/nginx/conf.d/*/*.conf; # 加载目录下所有子目录中的以.conf为后缀的文件</span><br></pre></td></tr></table></figure>
+
+<p>我这里打印下看看conf.d目录下有哪些配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -lR /etc/nginx/conf.d/ <span class="comment">#递归列举目录下所有的文件</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到很多.conf文件，其中l开头的文件，属于<strong>软链接</strong>，指向其他文件。后面指向的真实地址就是我们之前找到的项目文件路径。<br><img src="/./linuxstudy/link.png" alt="nginx配置文件"></p>
 
     
 
@@ -225,94 +269,7 @@
 
     
     <p class="article-more-link">
-      <a class="article-more-a" href="/2025/02/27/linuxstudy/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-  
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2025/02/25/hello-world/" target="_blank">Hello Xiaogiogio</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2025/02/25/hello-world/" class="archive-article-date">
-        <time datetime="2025-02-25T11:07:12.237Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-02-25</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-    
-
-    
-
-    
-
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-    
-
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2025/02/25/hello-world/">展开全文 >></a>
+      <a class="article-more-a" href="/2025/02/28/linuxstudy/">展开全文 >></a>
     </p>
     
 
