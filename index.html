@@ -182,6 +182,88 @@
             
 
   
+    <article id="post-massDataProcess" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2025/03/20/massDataProcess/" target="_blank">前端如何处理计算密集型操作（数据量10w+）</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2025/03/20/massDataProcess/" class="archive-article-date">
+        <time datetime="2025-03-20T07:56:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-03-20</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p>  在前端开发中，处理海量数据的渲染已有不少成熟方案：虚拟列表精准控制可视区域、时间分片平衡渲染与交互、分页加载渐进呈现内容。但当业务场景转向<strong>数据计算密集型</strong>任务时，就会面临截然不同的挑战：<strong>计算耗时引发交互冻结、复杂算法拖慢主线程、内存泄漏导致页面卡死</strong>等等。而这类问题的解决方案在前端领域却鲜少被讨论，相关可参考的文章也比较少。<br></p>
+<p>  本文将结合示例，探讨在10w+数据量级下可行的解决思路，涵盖<strong>数据结构优化</strong>、<strong>并行计算</strong>策略等关键技术点，抛砖引玉供大家参考讨论。<br></p>
+<blockquote>
+<p>  首先我这里假设一个场景：我们现在有一个表，当前这个表有10w+的数据量，现在有几个功能，分别是<strong>筛选、排序和分组</strong>。在前端需要根据筛选条件、排序规则和分组规则对数据进行计算，然后将最终的结果做一个展示。表格是可以操作的，用户修改了表格某个单元格的值，那么前端就要根据当前的数据重新进行<strong>筛选、排序和分组</strong>的计算操作，将计算后的排列结果呈现在表格上。</p>
+</blockquote>
+<p>  这个场景下很明确前端的计算耗时就在<strong>筛选、排序和分组</strong>上。我们先用代码简单模拟下。</p>
+    
+    <a class="article-more-a" href="/2025/03/20/massDataProcess/#more">more >></a>
+    
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+    
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2025/03/20/massDataProcess/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-linuxstudy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -211,7 +293,7 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    <p>&emsp;&emsp;近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：  </p>
+    <p>  近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：</p>
 <ol>
 <li>定位项目文件存储路径</li>
 <li>找到Nginx配置文件并解析Nginx配置映射关系</li>

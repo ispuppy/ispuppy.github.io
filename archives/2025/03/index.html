@@ -6,29 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://ispuppy.github.io">
-  <title>无文档Linux服务器部署文件与Nginx配置查找 | puppy</title>
+  <title>Archives: 2025/3 | puppy</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="description" content="近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：  定位项目文件存储路径 找到Nginx配置文件并解析Nginx配置映射关系">
-<meta property="og:type" content="article">
-<meta property="og:title" content="无文档Linux服务器部署文件与Nginx配置查找">
-<meta property="og:url" content="https://ispuppy.github.io/2025/02/28/linuxstudy/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="puppy">
+<meta property="og:url" content="https://ispuppy.github.io/archives/2025/03/index.html">
 <meta property="og:site_name" content="puppy">
-<meta property="og:description" content="近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：  定位项目文件存储路径 找到Nginx配置文件并解析Nginx配置映射关系">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/finalshell.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/bwtest.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/nginx.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/port.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/usr.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/sbin.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/link.png">
-<meta property="article:published_time" content="2025-02-28T03:55:24.000Z">
-<meta property="article:modified_time" content="2025-02-28T07:56:00.336Z">
 <meta property="article:author" content="puppy">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ispuppy.github.io/2025/02/28/linuxstudy/finalshell.png">
   
     <link rel="alternative" href="/atom.xml" title="puppy" type="application/atom+xml">
   
@@ -187,302 +175,54 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-linuxstudy" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
+            
+  
+  
     
-      <header class="article-header">
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2025" class="archive-year">2025</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	
+<a href="/2025/03/20/massDataProcess/" class="archive-article-date">
+        <time datetime="2025-03-20T07:56:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-03-20</time>
+</a>
+
+        </div>
+    	 
   
+    <h1 itemprop="name">
+	
+	  <a class="archive-article-title" href="/2025/03/20/massDataProcess/" target="_blank">前端如何处理计算密集型操作（数据量10w+）</a>
   
-    <h1 class="article-title" itemprop="name">
-      无文档Linux服务器部署文件与Nginx配置查找
     </h1>
   
 
 
-  
-  
-        
-        <span id="busuanzi_container_page_pv" style='display:none' class="archive-article-date">
-              <i class="icon-smile icon"></i> 阅读数：<span id="busuanzi_value_page_pv"></span>次
-        </span>
-
-<a href="/2025/02/28/linuxstudy/" class="archive-article-date">
-        <time datetime="2025-02-28T03:55:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-02-28</time>
-</a>
-
-  
-  
-    
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">1.1k字</span>
-    </span>
-  </span>
-
-  <span class="post-time">
-    &nbsp; | &nbsp;
-    <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">3分</span>
-    </span>
-  </span>
-</div>
-
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p>  近期我所在团队接手了一个遗留的前端项目，由于原团队未提供完整的部署文档（包括应用部署路径、Nginx配置参数等关键信息），需要通过SSH连接至Linux服务器进行逆向排查：</p>
-<ol>
-<li>定位项目文件存储路径</li>
-<li>找到Nginx配置文件并解析Nginx配置映射关系</li>
-</ol>
-<span id="more"></span>
-<p>  此过程涉及一些Linux系统操作，由于我一直使用的是Windows环境进行开发，没有用过Linux系统。所以也借此机会学习下linux的一些基础指令，顺便记录一些学习笔记。</p>
-<h3 id="安装finalshell并进行连接"><a class="markdownIt-Anchor" href="#安装finalshell并进行连接"></a> 安装finalshell并进行连接</h3>
-<p>  因为我用的是windows，所以需要安装finalshell <a target="_blank" rel="noopener" href="https://www.hostbuf.com/t/988.html">下载地址</a> 。这个软件可以远程连接linux服务器。根据自己的电脑选择合适的版本就行。<br>
-  然后进行连接创建，选择ssh连接。如下图所示：<br>
-<img src="finalshell.png" alt="finalshell连接"></p>
-<p>  输入服务器ip地址，端口，用户名，密码，然后点击连接。</p>
-<h3 id="定位项目文件路径"><a class="markdownIt-Anchor" href="#定位项目文件路径"></a> 定位项目文件路径</h3>
-<p>  因为项目有运行node服务和nginx服务，所以我先把机子上所有的服务进程找出来看看</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps aux <span class="comment">#显示所有包含其他使用者的进程</span></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">ps aux | grep -E <span class="string">&#x27;node|nginx&#x27;</span> <span class="comment"># 找到所有进程并对node和nginx高亮展示</span></span><br></pre></td></tr></table></figure>
-<p>  结果如下图所示<br>
-<img src="bwtest.png" alt="ps aux"></p>
-<p>  框起来的这几个进程很像是测试环境运行的node服务，根据上面的运行路径，找到bwtest文件看一下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -a /data/bwtest/project <span class="comment">#查看目录下所有文件</span></span><br></pre></td></tr></table></figure>
-<p>  这些文件基本和我在git上看到的项目仓库基本一致，所以可以基本断定这就是项目文件的存储路径了。</p>
-<h3 id="找到nginx配置文件并解析nginx配置映射关系"><a class="markdownIt-Anchor" href="#找到nginx配置文件并解析nginx配置映射关系"></a> 找到Nginx配置文件并解析Nginx配置映射关系</h3>
-<p>  这里的话可以先尝试通过进程id来找到运行路径，然后再获取该进程对应的配置文件路径</p>
-<h5 id="查找nginx服务进程"><a class="markdownIt-Anchor" href="#查找nginx服务进程"></a> 查找nginx服务进程</h5>
-<p> 查找Nginx服务进程有两种方式</p>
-<ol>
-<li><strong>上文用过的通过 <font color="red">ps aux | grep nginx</font> 找到所有的进程</strong></li>
-</ol>
-<p><img src="nginx.png" alt="nginx"></p>
-<ol start="2">
-<li><strong>通过端口找进程</strong><br>
-nginx常用端口一般为80</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -nlp | grep 80 <span class="comment">#显示端口80的连接情况</span></span><br></pre></td></tr></table></figure>
-<p>  可以看到Ngigx的进程pid为<strong>20577</strong><br>
-<img src="port.png" alt="nginx port"></p>
-<h5 id="通过进程id查找nginx配置文件"><a class="markdownIt-Anchor" href="#通过进程id查找nginx配置文件"></a> 通过进程id查找Nginx配置文件</h5>
-<p>  在Linux中，每个进程的信息都存储在/proc目录下，进程ID对应的子目录里会有详细信息。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /proc/20577/exe <span class="comment">#查看进程20577的运行路径</span></span><br></pre></td></tr></table></figure>
-<p><img src="usr.png" alt="运行路径"></p>
-<p>  运行路径为<strong>usr/sbin/nginx</strong>,然后通过运行路径查找Nginx配置文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/nginx -t <span class="comment">#使用-t参数就可以获取该进程对应的配置文件路径</span></span><br></pre></td></tr></table></figure>
-<p>这里可以看到nginx的配置文件路径为**/etc/nginx/nginx.conf**<br>
-<img src="sbin.png" alt="配置文件路径"><br>
-  到这里基本上逆向查找的文件都找到了。</p>
-<h3 id="nginx配置文件默认路径"><a class="markdownIt-Anchor" href="#nginx配置文件默认路径"></a> Nginx配置文件默认路径</h3>
-<p>  在Linux中，Nginx的配置文件一般位于<strong>etc/nginx/nginx.conf</strong>。这个路径是Nginx的默认配置文件路径。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/etc/nginx/</span><br><span class="line">├── nginx.conf              <span class="comment"># 必加载主配置</span></span><br><span class="line">├── mime.types              <span class="comment"># MIME类型映射</span></span><br><span class="line">├── conf.d/                 <span class="comment"># 标准模块化配置目录</span></span><br><span class="line">├── sites-enabled/          <span class="comment"># 加载符号链接的站点配置</span></span><br><span class="line">├── modules-enabled/*.conf  <span class="comment"># 动态模块配置</span></span><br><span class="line">└── fastcgi_params          <span class="comment"># FastCGI参数文件</span></span><br></pre></td></tr></table></figure>
-<p>  这里得提一下<strong>conf.d</strong>目录。conf.d目录是Nginx的配置文件目录，主要作用：</p>
-<ul>
-<li>配置分离： 将不同业务/站点的配置拆分为独立文件</li>
-<li>动态加载：方便通过增删文件管理配置（无需修改主配置文件）</li>
-<li>规范管理：通常存放server块配置、反向代理规则等</li>
-</ul>
-<p><strong>/etc/nginx/nginx.conf 中通常包含：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">include /etc/nginx/conf.d/*.conf; <span class="comment"># 加载conf.d目录下所有的.conf文件。按文件名字母序加载（00-default.conf会比api.conf先加载）</span></span><br><span class="line">include /etc/nginx/conf.d/*/*.conf; <span class="comment"># 加载目录下所有子目录中的以.conf为后缀的文件</span></span><br></pre></td></tr></table></figure>
-<p>我这里打印下看看conf.d目录下有哪些配置文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -lR /etc/nginx/conf.d/ <span class="comment">#递归列举目录下所有的文件</span></span><br></pre></td></tr></table></figure>
-<p>可以看到很多.conf文件，其中l开头的文件，属于<strong>软链接</strong>，指向其他文件。后面指向的真实地址就是我们之前找到的项目文件路径。<br>
-<img src="link.png" alt="nginx配置文件"></p>
-
-    
-
-    
-    <div class="page-reward">
-      <a href="javascript:void(0);" class="page-reward-btn tooltip-top" target="_self">
-        <div class="tooltip tooltip-east">
-          <span class="tooltip-item">
-            赏
-          </span>
-          <span class="tooltip-content">
-            <span class="tooltip-text">
-              <span class="tooltip-inner">
-                <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i
-                    class="icon icon-quo-right"></i></p>
-                <div class="reward-box">
-                  
-                  <div class="reward-box-item">
-                    <img class="reward-img" src="/img/alipay.jpg">
-                    <span class="reward-type">支付宝</span>
-                  </div>
-                  
-                  
-                  <div class="reward-box-item">
-                    <img class="reward-img" src="/img/weixin.png">
-                    <span class="reward-type">微信</span>
-                  </div>
-                  
-                </div>
-              </span>
-            </span>
-          </span>
-        </div>
-      </a>
-    </div>
-    
-
-    
-    <div class="declare"> 
-      <ul class="post-copyright">
-        <li>
-          <strong>本文作者：</strong>
-          puppy
-        </li>
-        <li>
-          <strong>本文链接：</strong>
-          <a href="https://ispuppy.github.io/2025/02/28/linuxstudy/" title="无文档Linux服务器部署文件与Nginx配置查找" target="_blank">https://ispuppy.github.io/2025/02/28/linuxstudy/</a>
-        </li>
-        
-        <li>
-          <strong>版权声明： </strong>
+        <div class="article-info info-on-right">
           
-          本BLOG上原创文章未经本人许可，不得用于商业用途及传统媒体。网络媒体转载请注明出处，否则属于侵权行为。
-        </li>
-        
-      </ul>
-    </div>
-    
+          
 
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-    
-
-    
-
-    
-    
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <!-- <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a> -->
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="juejin share-sns" href="javascript:;" data-type="juejin">
-            <i class="icon icon-juejin"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-     <!-- <img src="//pan.baidu.com/share/qrcode?url=https://ispuppy.github.io/2025/02/28/linuxstudy/" alt="微信分享二维码"> -->
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-
-    
-    <div class="clearfix"></div>
-  </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-
-<nav id="article-nav">
-  
-    <a href="/2025/03/20/massDataProcess/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          前端如何处理计算密集型操作（数据量10w+）
-        
-      </div>
-    </a>
   
   
-</nav>
+    </div></section>
+  
 
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85finalshell%E5%B9%B6%E8%BF%9B%E8%A1%8C%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.</span> <span class="toc-text"> 安装finalshell并进行连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%BD%8D%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84"><span class="toc-number">2.</span> <span class="toc-text"> 定位项目文件路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%BE%E5%88%B0nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%B9%B6%E8%A7%A3%E6%9E%90nginx%E9%85%8D%E7%BD%AE%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.</span> <span class="toc-text"> 找到Nginx配置文件并解析Nginx配置映射关系</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E6%89%BEnginx%E6%9C%8D%E5%8A%A1%E8%BF%9B%E7%A8%8B"><span class="toc-number">3.0.1.</span> <span class="toc-text"> 查找nginx服务进程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E8%BF%9B%E7%A8%8Bid%E6%9F%A5%E6%89%BEnginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.0.2.</span> <span class="toc-text"> 通过进程id查找Nginx配置文件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%BB%98%E8%AE%A4%E8%B7%AF%E5%BE%84"><span class="toc-number">4.</span> <span class="toc-text"> Nginx配置文件默认路径</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
           </div>
@@ -523,8 +263,8 @@ nginx常用端口一般为80</li>
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,
