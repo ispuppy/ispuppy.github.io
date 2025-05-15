@@ -18,17 +18,17 @@
 <meta property="og:description" content="ai-code-review  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 pre-commit hooks,在 git 提交前执行这个脚本。整体流程如下：">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/node-ai.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/pre-commit.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/husky.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/gerrit.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/review.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/jarname.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/jar.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/plugin.png">
-<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/ai-review.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/node-ai.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/pre-commit.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/husky.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/gerrit.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/review.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/jarname.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/jar.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/plugin.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-review.png">
 <meta property="article:published_time" content="2025-04-09T03:46:14.784Z">
-<meta property="article:modified_time" content="2025-05-15T09:48:53.862Z">
+<meta property="article:modified_time" content="2025-05-15T09:53:41.668Z">
 <meta property="article:author" content="puppy">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
@@ -200,18 +200,11 @@
 <p>  这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。<br>
   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 <code>pre-commit</code> hooks,在 git 提交前执行这个脚本。整体流程如下：</p>
 <p><img src="flow.png" alt="流程图"></p>
-<!-- ```mermaid
-graph LR
-  A[pre-commit] tsfh B[检查暂存区改动]
-  B tsfh|无改动| C[退出提交]
-  B tsfh|有改动| D[获取差异内容]
-  D tsfh E[调用AI审查接口]
-  E tsfh F{审查通过?}
-  F tsfh|YES| G[允许提交]
-  F tsfh|NO| H[阻止提交]
-  G tsfh I[结束]
-  H tsfh I
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&amp;emsp;&amp;emsp;接下来我们来具体实现下代码。在项目根目录下新建一个pre-commit.js文件，这个文件就是我们的脚本。</span><br><span class="line"></span><br><span class="line">### 1.1 校验暂存区代码</span><br><span class="line"></span><br><span class="line">&amp;emsp;&amp;emsp;通过 `git diff --cached` 验证是否存在待提交内容，如果没有改动则直接退出提交。</span><br><span class="line"></span><br><span class="line">```js</span><br><span class="line">const &#123; execSync &#125; = require(&#x27;child_process&#x27;);</span><br><span class="line">const checkStaged = () =&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    const changes = execSync(&quot;git diff --cached --name-only&quot;).toString().trim();</span><br><span class="line">    if (!changes) &#123;</span><br><span class="line">      console.log(&quot;No staged changes found.&quot;);</span><br><span class="line">      process.exit(0);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; catch (error) &#123;</span><br><span class="line">    console.error(&quot;Error getting staged changes:&quot;, error.message);</span><br><span class="line">    process.exit(1);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>  接下来我们来具体实现下代码。在项目根目录下新建一个pre-commit.js文件，这个文件就是我们的脚本。</p>
+<h3 id="11-校验暂存区代码"><a class="markdownIt-Anchor" href="#11-校验暂存区代码"></a> 1.1 校验暂存区代码</h3>
+<p>  通过 <code>git diff --cached</code> 验证是否存在待提交内容，如果没有改动则直接退出提交。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; execSync &#125; = <span class="built_in">require</span>(<span class="string">&#x27;child_process&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">checkStaged</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> changes = <span class="title function_">execSync</span>(<span class="string">&quot;git diff --cached --name-only&quot;</span>).<span class="title function_">toString</span>().<span class="title function_">trim</span>();</span><br><span class="line">    <span class="keyword">if</span> (!changes) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;No staged changes found.&quot;</span>);</span><br><span class="line">      process.<span class="title function_">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error getting staged changes:&quot;</span>, error.<span class="property">message</span>);</span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="12-获取差异内容"><a class="markdownIt-Anchor" href="#12-获取差异内容"></a> 1.2 获取差异内容</h3>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">getDiff</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> diff = <span class="title function_">execSync</span>(<span class="string">&quot;git diff --cached&quot;</span>).<span class="title function_">toString</span>();</span><br><span class="line">    <span class="keyword">if</span> (!diff) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;No diff content found.&quot;</span>);</span><br><span class="line">      process.<span class="title function_">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> diff;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error getting diff content:&quot;</span>, error.<span class="property">message</span>);</span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="13-准备prompt"><a class="markdownIt-Anchor" href="#13-准备prompt"></a> 1.3 准备prompt</h3>
@@ -235,7 +228,7 @@ graph LR
 <p>  我新建了一个 test.js 文件，然后添加如下代码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">fn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> num = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; <span class="literal">true</span>; i++) &#123;</span><br><span class="line">    num += i</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>  然后执行 git add . 然后 git commit -m “test”。效果如下：</p>
-<p><img src="./ai-check/node-ai.png" alt="ai-review" /></p>
+<p><img src="node-ai.png" alt="ai-review"></p>
 <p>  看来还是不错的，有效识别代码中的逻辑缺陷与语法隐患（如无限循环、变量误用等），同时当不满足提交条件后，也是直接终止了 commit。这里面其实比较关键的是 prompt 的内容，ai 评审的效果主要就是取决于它。</p>
 <h2 id="2-ai-pre-commit-reviewer-插件"><a class="markdownIt-Anchor" href="#2-ai-pre-commit-reviewer-插件"></a> 2. ai-pre-commit-reviewer 插件</h2>
 <p>  上面我们是通过 js 脚本来实现的，其实也可以通过现成插件来实现。原理和第一个方法是一样的，只不过是插件帮我们封装好了，我们只需要配置下即可。<a target="_blank" rel="noopener" href="https://github.com/ispuppy/ai-pre-commit-reviewer">插件地址</a></p>
@@ -245,9 +238,9 @@ graph LR
 <p>  插件安装完成后，新建一个.env 文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">baseURL= *** <span class="comment">#模型服务地址</span></span><br><span class="line">apiKey=*** <span class="comment">#模型服务密钥</span></span><br><span class="line">language=chinese <span class="comment">#语言</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h3 id="23-效果预览"><a class="markdownIt-Anchor" href="#23-效果预览"></a> 2.3 效果预览</h3>
-<p><img src="./ai-check/pre-commit.png" alt="插件效果" /></p>
+<p><img src="pre-commit.png" alt="插件效果"></p>
 <p>  也可以配合husky使用，进行语法检查后执行code review。</p>
-<p><img src="./ai-check/husky.png" alt="插件效果" /></p>
+<p><img src="husky.png" alt="插件效果"></p>
 <h2 id="3-gerrit-ai-code-review"><a class="markdownIt-Anchor" href="#3-gerrit-ai-code-review"></a> 3. gerrit + ai-code-review</h2>
 <p>  Gerrit 是由 Google 开发的代码审查管理系统，基于 Git 版本控制系统构建，主要特性包括：</p>
 <ul>
@@ -260,7 +253,7 @@ graph LR
 <h3 id="21-gerrit-安装与配置"><a class="markdownIt-Anchor" href="#21-gerrit-安装与配置"></a> 2.1 gerrit 安装与配置</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行以下命令</span></span><br><span class="line">docker pull gerritcodereview/gerrit:latest</span><br></pre></td></tr></table></figure>
 <p>  安装完后可以看下容器列表</p>
-<p><img src="./ai-check/gerrit.png" alt="gerrit容器" /></p>
+<p><img src="gerrit.png" alt="gerrit容器"></p>
 <p>  没问题后启动服务，然后在浏览器中访问 <a target="_blank" rel="noopener" href="http://localhost:8080/">http://localhost:8080/</a> 就可以看到gerrit首页</p>
 <h4 id="211-配置-ssh-密钥"><a class="markdownIt-Anchor" href="#211-配置-ssh-密钥"></a> 2.1.1 配置 ssh 密钥</h4>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C <span class="string">&quot;your_email@example.com&quot;</span></span><br><span class="line"><span class="comment"># 直接按3次回车（不要设置密码）</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_ed25519.pub  <span class="comment"># 复制输出的内容</span></span><br></pre></td></tr></table></figure>
@@ -280,7 +273,7 @@ graph LR
 <p>  然后新建个js文件，写点代码并提交。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin HEAD:refs/for/refs/meta/config <span class="comment"># 提交到 refs/meta/config 分支</span></span><br></pre></td></tr></table></figure>
 <p>  然后在gerrit首页可以看到刚刚提交的代码，点击查看详情，可以看到代码审核的流程。</p>
-<p><img src="./ai-check/review.png" alt="测试review" /></p>
+<p><img src="review.png" alt="测试review"></p>
 <h3 id="22-插件安装和配置"><a class="markdownIt-Anchor" href="#22-插件安装和配置"></a> 2.2 插件安装和配置</h3>
 <p>  将 ai-code-review 插件克隆到本地。插件详情可参考<a target="_blank" rel="noopener" href="https://gerrit.googlesource.com/plugins/ai-code-review/">官方文档</a>。此插件可以使用不同的 AI Chat 服务（例如 ChatGPT 或 OLLAMA）</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://gerrit.googlesource.com/plugins/ai-code-review</span><br></pre></td></tr></table></figure>
@@ -288,14 +281,14 @@ graph LR
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y openjdk-21-jdk maven  <span class="comment"># 官方文档说 11 就行，但是我实际上跑了后发现需要 JDK 21+</span></span><br></pre></td></tr></table></figure>
 <p>  进去项目目录构建 JAR 包</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ai-code-review</span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
-<p>  当输出<font color=green><strong>BUILD BUILD SUCCESS</strong></font>时，表示构建成功。进入目录看下生成的包名。</p>
-<p><img src="./ai-check/jarname.png" alt="jar包" /></p>
+<p>  当输出<font color="green"><strong>BUILD BUILD SUCCESS</strong></font>时，表示构建成功。进入目录看下生成的包名。</p>
+<p><img src="jarname.png" alt="jar包"></p>
 <p>  然后将生成的jar包复制到 gerrit 的 plugins 目录下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我这里容器名为 gerrit，JAR 文件在 target/ 目录</span></span><br><span class="line">docker <span class="built_in">cp</span> target/ai-code-review-3.11.0.jar gerrit:/var/gerrit/plugins/</span><br></pre></td></tr></table></figure>
 <p>  然后进入容器内看下插件列表，确认插件已经安装成功</p>
-<p><img src="./ai-check/jar.png" alt="插件列表" /></p>
+<p><img src="jar.png" alt="插件列表"></p>
 <p>  也可以在 gerrit 网页端查看插件启动情况</p>
-<p><img src="./ai-check/plugin.png" alt="插件列表" /></p>
+<p><img src="plugin.png" alt="插件列表"></p>
 <p>  接着修改配置文件，在 gerrit 的 etc 目录下找到 gerrit.config 文件。但在这之前需要在 Gerrit 中创建一个 AI Code Review 用户，这个席位用于 AI 来使用进行代码评审。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi var/gerrit/etc/gerrit.config</span><br></pre></td></tr></table></figure>
 <p>  在文件里添加以下内容。</p>
@@ -310,9 +303,9 @@ graph LR
 </ul>
 <p>  更多字段配置参考<a target="_blank" rel="noopener" href="https://gerrit.googlesource.com/plugins/ai-code-review/">官方文档</a></p>
 <p>  这些都完成后，重启 gerrit 服务。然后修改下代码，写段明显有问题的代码，重新 commit 并 push 代码，看下 AI 代码评审的效果怎么样。</p>
-<p><img src="./ai-check/ai-review.png" alt="测试结果" /></p>
+<p><img src="ai-review.png" alt="测试结果"></p>
 <p>  可以看到 ai 审查代码的效果还是不错的。当然我这里是修改了插件的prompt，让它用中文生成评论，它默认是用英文回答的。</p>
--->
+
     
 
     
@@ -472,7 +465,7 @@ graph LR
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ai-code-review"><span class="toc-number">1.</span> <span class="toc-text"> ai-code-review</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8-js-%E8%84%9A%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 使用 JS 脚本</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ai-code-review"><span class="toc-number">1.</span> <span class="toc-text"> ai-code-review</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8-js-%E8%84%9A%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 使用 JS 脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E6%A0%A1%E9%AA%8C%E6%9A%82%E5%AD%98%E5%8C%BA%E4%BB%A3%E7%A0%81"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 1.1 校验暂存区代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-%E8%8E%B7%E5%8F%96%E5%B7%AE%E5%BC%82%E5%86%85%E5%AE%B9"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 1.2 获取差异内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-%E5%87%86%E5%A4%87prompt"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 1.3 准备prompt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA-ai-%E6%89%A7%E8%A1%8C%E5%99%A8"><span class="toc-number">1.1.4.</span> <span class="toc-text"> 1.4 定义一个 AI 执行器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-%E7%BB%93%E6%9E%9C%E5%A4%84%E7%90%86"><span class="toc-number">1.1.5.</span> <span class="toc-text"> 1.5 结果处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-%E4%B8%BB%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E6%95%B4%E4%B8%AA%E6%B5%81%E7%A8%8B"><span class="toc-number">1.1.6.</span> <span class="toc-text"> 1.6 主函数执行整个流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-git-hooks%E9%87%8C%E6%B7%BB%E5%8A%A0%E6%89%A7%E8%A1%8C%E8%AF%A5%E8%84%9A%E6%9C%AC%E9%80%BB%E8%BE%91"><span class="toc-number">1.1.7.</span> <span class="toc-text"> 1.7 git hooks里添加执行该脚本逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.8.</span> <span class="toc-text"> 1.8 测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ai-pre-commit-reviewer-%E6%8F%92%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text"> 2. ai-pre-commit-reviewer 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 2.1 安装插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 2.2 配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-%E6%95%88%E6%9E%9C%E9%A2%84%E8%A7%88"><span class="toc-number">1.2.3.</span> <span class="toc-text"> 2.3 效果预览</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-gerrit-ai-code-review"><span class="toc-number">1.3.</span> <span class="toc-text"> 3. gerrit + ai-code-review</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-gerrit-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 2.1 gerrit 安装与配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#211-%E9%85%8D%E7%BD%AE-ssh-%E5%AF%86%E9%92%A5"><span class="toc-number">1.3.1.1.</span> <span class="toc-text"> 2.1.1 配置 ssh 密钥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#212-%E6%8B%89%E5%8F%96%E9%A1%B9%E7%9B%AE%E6%B5%8B%E8%AF%95"><span class="toc-number">1.3.1.2.</span> <span class="toc-text"> 2.1.2 拉取项目测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 2.2 插件安装和配置</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
