@@ -6,17 +6,32 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://ispuppy.github.io">
-  <title>Archives | puppy</title>
+  <title>puppy</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:type" content="website">
+  <meta name="description" content="ai-code-review  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 pre-commit hooks,在 git 提交前执行这个脚本。整体流程如下：">
+<meta property="og:type" content="article">
 <meta property="og:title" content="puppy">
-<meta property="og:url" content="https://ispuppy.github.io/archives/index.html">
+<meta property="og:url" content="https://ispuppy.github.io/2025/04/09/aiCheck/index.html">
 <meta property="og:site_name" content="puppy">
+<meta property="og:description" content="ai-code-review  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 pre-commit hooks,在 git 提交前执行这个脚本。整体流程如下：">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/node-ai.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/pre-commit.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/husky.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/gerrit.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/review.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/jarname.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/jar.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/plugin.png">
+<meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-check/ai-review.png">
+<meta property="article:published_time" content="2025-04-09T03:46:14.784Z">
+<meta property="article:modified_time" content="2025-05-15T09:48:53.862Z">
 <meta property="article:author" content="puppy">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
   
     <link rel="alternative" href="/atom.xml" title="puppy" type="application/atom+xml">
   
@@ -175,110 +190,308 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-aiCheck" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+  <div class="article-entry" itemprop="articleBody">
     
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2025" class="archive-year">2025</a>
-        </div>
-        <div class="archives">
+    <h1 id="ai-code-review"><a class="markdownIt-Anchor" href="#ai-code-review"></a> ai-code-review</h1>
+<h2 id="1-使用-js-脚本"><a class="markdownIt-Anchor" href="#1-使用-js-脚本"></a> 1. 使用 JS 脚本</h2>
+<p>  这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。<br>
+  这里我们需要使用 Node.js 来实现这个功能。利用 git 的 <code>pre-commit</code> hooks,在 git 提交前执行这个脚本。整体流程如下：</p>
+<p><img src="flow.png" alt="流程图"></p>
+<!-- ```mermaid
+graph LR
+  A[pre-commit] tsfh B[检查暂存区改动]
+  B tsfh|无改动| C[退出提交]
+  B tsfh|有改动| D[获取差异内容]
+  D tsfh E[调用AI审查接口]
+  E tsfh F{审查通过?}
+  F tsfh|YES| G[允许提交]
+  F tsfh|NO| H[阻止提交]
+  G tsfh I[结束]
+  H tsfh I
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&amp;emsp;&amp;emsp;接下来我们来具体实现下代码。在项目根目录下新建一个pre-commit.js文件，这个文件就是我们的脚本。</span><br><span class="line"></span><br><span class="line">### 1.1 校验暂存区代码</span><br><span class="line"></span><br><span class="line">&amp;emsp;&amp;emsp;通过 `git diff --cached` 验证是否存在待提交内容，如果没有改动则直接退出提交。</span><br><span class="line"></span><br><span class="line">```js</span><br><span class="line">const &#123; execSync &#125; = require(&#x27;child_process&#x27;);</span><br><span class="line">const checkStaged = () =&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    const changes = execSync(&quot;git diff --cached --name-only&quot;).toString().trim();</span><br><span class="line">    if (!changes) &#123;</span><br><span class="line">      console.log(&quot;No staged changes found.&quot;);</span><br><span class="line">      process.exit(0);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; catch (error) &#123;</span><br><span class="line">    console.error(&quot;Error getting staged changes:&quot;, error.message);</span><br><span class="line">    process.exit(1);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="12-获取差异内容"><a class="markdownIt-Anchor" href="#12-获取差异内容"></a> 1.2 获取差异内容</h3>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">getDiff</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> diff = <span class="title function_">execSync</span>(<span class="string">&quot;git diff --cached&quot;</span>).<span class="title function_">toString</span>();</span><br><span class="line">    <span class="keyword">if</span> (!diff) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;No diff content found.&quot;</span>);</span><br><span class="line">      process.<span class="title function_">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> diff;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error getting diff content:&quot;</span>, error.<span class="property">message</span>);</span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="13-准备prompt"><a class="markdownIt-Anchor" href="#13-准备prompt"></a> 1.3 准备prompt</h3>
+<p>  这里我们需要准备一个 prompt，这个 prompt 就是用来告诉 AI 我们要检查什么内容。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">getPrompt</span> = (<span class="params">diff</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`</span></span><br><span class="line"><span class="string">    你是一名代码审核员，专门负责识别git差异中代码的安全问题和质量问题。您的任务是分析git 差异，并就代码更改引入的任何潜在安全问题或其他重大问题提供详细报告。</span></span><br><span class="line"><span class="string">    这里是代码差异内容：</span></span><br><span class="line"><span class="string">    <span class="subst">$&#123;diff&#125;</span></span></span><br><span class="line"><span class="string">    请根据以下步骤完成分析： </span></span><br><span class="line"><span class="string">      1.安全分析: </span></span><br><span class="line"><span class="string">      - 查找由新代码引发的一些潜在的安全漏洞，比如: </span></span><br><span class="line"><span class="string">        a)注入缺陷（SQL注入、命令注入等） </span></span><br><span class="line"><span class="string">        b)认证和授权问题</span></span><br><span class="line"><span class="string">        ...</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    2. 代码逻辑和语法分析:</span></span><br><span class="line"><span class="string">      -识别任何可能导致运行时错误的逻辑错误或语法问题，比如：</span></span><br><span class="line"><span class="string">      a)不正确的控制流程或条件语句</span></span><br><span class="line"><span class="string">      b)循环使用不当，可能导致无限循环</span></span><br><span class="line"><span class="string">      ...</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    3. 报告格式：</span></span><br><span class="line"><span class="string">      对于每个发现的问题，需要按照严重等级分为高/中/低。</span></span><br><span class="line"><span class="string">      每个问题返回格式如下：</span></span><br><span class="line"><span class="string">      -[严重等级]（高中低）- [问题类型](安全问题/代码质量) - 问题所在文件名称以及所在行数</span></span><br><span class="line"><span class="string">    - 问题原因 + 解决方案</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    4. 总结:</span></span><br><span class="line"><span class="string">      在列出所有单独的问题之后，简要总结一下这些变化的总体影响，包括：</span></span><br><span class="line"><span class="string">        -发现的安全问题数量（按严重程度分类）</span></span><br><span class="line"><span class="string">        -发现的代码质量问题的数量（按严重性分类）</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    请现在开始你的分析，并使用指定的格式陈述你的发现。如果没有发现问题，请在报告中明确说明。</span></span><br><span class="line"><span class="string">    输出应该是一个简单的结论，无论是否提交这些更改，都不应该输出完整的报告。但是要包括文件名。并将每行标识的问题分别列出。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    如果存在高等级的错误，就需要拒绝提交</span></span><br><span class="line"><span class="string">    回答里的结尾需要单独一行文字 &quot;COMMIT: NO&quot; 或者 &quot;COMMIT: YES&quot; 。这将用来判断是否允许提交</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="14-定义一个-ai-执行器"><a class="markdownIt-Anchor" href="#14-定义一个-ai-执行器"></a> 1.4 定义一个 AI 执行器</h3>
+<p>  这里我用 chatgpt 实现的，具体代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">execCodeReviewer</span> = (<span class="params">text</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> apiKey = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">const</span> apiBaseUrl = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">const</span> translateUrl = <span class="string">`<span class="subst">$&#123;apiBaseUrl&#125;</span>/v1/chat/completions`</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">fetch</span>(translateUrl, &#123;</span><br><span class="line">      <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">      <span class="attr">headers</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">        <span class="title class_">Authorization</span>: <span class="string">`Bearer <span class="subst">$&#123;apiKey&#125;</span>`</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">        <span class="attr">stream</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">messages</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">role</span>: <span class="string">&#x27;user&#x27;</span>,</span><br><span class="line">            <span class="attr">content</span>: text,</span><br><span class="line">          &#125;,</span><br><span class="line">        ],</span><br><span class="line">      &#125;),</span><br><span class="line">    &#125;)</span><br><span class="line">      .<span class="title function_">then</span>(<span class="function"><span class="params">res</span> =&gt;</span> res.<span class="title function_">json</span>().<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> <span class="title function_">resolve</span>(data.<span class="property">choices</span>[<span class="number">0</span>].<span class="property">message</span>.<span class="property">content</span>)))</span><br><span class="line">      .<span class="title function_">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">error</span>(err)</span><br><span class="line">      &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="15-结果处理"><a class="markdownIt-Anchor" href="#15-结果处理"></a> 1.5 结果处理</h3>
+<p>  这里我们需要解析一下结果，提取结果中是否包含 &quot;COMMIT: YES&quot;关键字，有则允许提交，否则不允许提交并打印结果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">handleReviewResult</span> = (<span class="params">result</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> decision = result.<span class="title function_">includes</span>(<span class="string">&quot;COMMIT: YES&quot;</span>) ? <span class="string">&quot;YES&quot;</span> : <span class="string">&quot;NO&quot;</span>;</span><br><span class="line">  <span class="keyword">if</span> (decision === <span class="string">&#x27;NO&#x27;</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;\nCritical issues found. Please address them before committing.&quot;</span>);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(details);</span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;\nCommit approved.&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="16-主函数执行整个流程"><a class="markdownIt-Anchor" href="#16-主函数执行整个流程"></a> 1.6 主函数执行整个流程</h3>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">main</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="title function_">checkStaged</span>();</span><br><span class="line">    <span class="keyword">const</span> diffContent = <span class="title function_">getDiff</span>();</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Running code review...&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> prompt = <span class="title function_">getPrompt</span>(diffContent);</span><br><span class="line">    <span class="keyword">const</span> reseponse = <span class="keyword">await</span> <span class="title function_">execCodeReviewer</span>(prompt);</span><br><span class="line">    <span class="title function_">handleReviewResult</span>(reseponse)</span><br><span class="line"></span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error:&quot;</span>, error.<span class="property">message</span>);</span><br><span class="line">    process.<span class="title function_">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="17-git-hooks里添加执行该脚本逻辑"><a class="markdownIt-Anchor" href="#17-git-hooks里添加执行该脚本逻辑"></a> 1.7 git hooks里添加执行该脚本逻辑</h3>
+<p>  进入项目根目录，在这里运行 git bash。打开pre-commit钩子文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim .git/hooks/pre-commit</span><br></pre></td></tr></table></figure>
+<p>  然后添加以下内容</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">GIT_ROOT=$(git rev-parse --show-toplevel)</span><br><span class="line">node <span class="string">&quot;<span class="variable">$GIT_ROOT</span>/pre-commit.js&quot;</span> </span><br><span class="line"><span class="built_in">exit</span> $?</span><br></pre></td></tr></table></figure>
+<p>保存退出后，我们就可以使用 git 做下测试。</p>
+<h3 id="18-测试"><a class="markdownIt-Anchor" href="#18-测试"></a> 1.8 测试</h3>
+<p>  我新建了一个 test.js 文件，然后添加如下代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">fn</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> num = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; <span class="literal">true</span>; i++) &#123;</span><br><span class="line">    num += i</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  然后执行 git add . 然后 git commit -m “test”。效果如下：</p>
+<p><img src="./ai-check/node-ai.png" alt="ai-review" /></p>
+<p>  看来还是不错的，有效识别代码中的逻辑缺陷与语法隐患（如无限循环、变量误用等），同时当不满足提交条件后，也是直接终止了 commit。这里面其实比较关键的是 prompt 的内容，ai 评审的效果主要就是取决于它。</p>
+<h2 id="2-ai-pre-commit-reviewer-插件"><a class="markdownIt-Anchor" href="#2-ai-pre-commit-reviewer-插件"></a> 2. ai-pre-commit-reviewer 插件</h2>
+<p>  上面我们是通过 js 脚本来实现的，其实也可以通过现成插件来实现。原理和第一个方法是一样的，只不过是插件帮我们封装好了，我们只需要配置下即可。<a target="_blank" rel="noopener" href="https://github.com/ispuppy/ai-pre-commit-reviewer">插件地址</a></p>
+<h3 id="21-安装插件"><a class="markdownIt-Anchor" href="#21-安装插件"></a> 2.1 安装插件</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install ai-pre-commit-reviewer --save-dev</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装完成后执行</span></span><br><span class="line"></span><br><span class="line">npx add-ai-review <span class="comment">#添加执行逻辑到git pre-commit钩子中</span></span><br></pre></td></tr></table></figure>
+<h3 id="22-配置文件"><a class="markdownIt-Anchor" href="#22-配置文件"></a> 2.2 配置文件</h3>
+<p>  插件安装完成后，新建一个.env 文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">baseURL= *** <span class="comment">#模型服务地址</span></span><br><span class="line">apiKey=*** <span class="comment">#模型服务密钥</span></span><br><span class="line">language=chinese <span class="comment">#语言</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="23-效果预览"><a class="markdownIt-Anchor" href="#23-效果预览"></a> 2.3 效果预览</h3>
+<p><img src="./ai-check/pre-commit.png" alt="插件效果" /></p>
+<p>  也可以配合husky使用，进行语法检查后执行code review。</p>
+<p><img src="./ai-check/husky.png" alt="插件效果" /></p>
+<h2 id="3-gerrit-ai-code-review"><a class="markdownIt-Anchor" href="#3-gerrit-ai-code-review"></a> 3. gerrit + ai-code-review</h2>
+<p>  Gerrit 是由 Google 开发的代码审查管理系统，基于 Git 版本控制系统构建，主要特性包括：</p>
+<ul>
+<li>强制代码审查机制：所有代码必须通过人工/自动化审查才能合并</li>
+<li>细粒度权限控制：支持基于项目/分支的访问权限管理</li>
+<li>在线代码对比：提供可视化差异查看界面（Side-by-Side Diff）</li>
+<li>插件扩展体系：可通过插件集成 CI/CD、静态分析等工具</li>
+</ul>
+<p>  其核心功能主要是通过 refs/for/ 推送机制，确保所有代码变更必须通过审核。因此我们可以利用 ai 代替人工去执行代码 review，这样效率也会更高效。</p>
+<h3 id="21-gerrit-安装与配置"><a class="markdownIt-Anchor" href="#21-gerrit-安装与配置"></a> 2.1 gerrit 安装与配置</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行以下命令</span></span><br><span class="line">docker pull gerritcodereview/gerrit:latest</span><br></pre></td></tr></table></figure>
+<p>  安装完后可以看下容器列表</p>
+<p><img src="./ai-check/gerrit.png" alt="gerrit容器" /></p>
+<p>  没问题后启动服务，然后在浏览器中访问 <a target="_blank" rel="noopener" href="http://localhost:8080/">http://localhost:8080/</a> 就可以看到gerrit首页</p>
+<h4 id="211-配置-ssh-密钥"><a class="markdownIt-Anchor" href="#211-配置-ssh-密钥"></a> 2.1.1 配置 ssh 密钥</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C <span class="string">&quot;your_email@example.com&quot;</span></span><br><span class="line"><span class="comment"># 直接按3次回车（不要设置密码）</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_ed25519.pub  <span class="comment"># 复制输出的内容</span></span><br></pre></td></tr></table></figure>
+<p>  然后在 “settings” 页面中选择左侧的&quot;SSH Keys&quot;,将复制的公钥内容粘贴进去。添加完成后测试下连接情况。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 29418 admin@localhost  <span class="comment"># 输入yes接受指纹</span></span><br></pre></td></tr></table></figure>
+<p>  看到 <strong>Welcome to Gerrit Code Review</strong> 表示成功</p>
+<h4 id="212-拉取项目测试"><a class="markdownIt-Anchor" href="#212-拉取项目测试"></a> 2.1.2 拉取项目测试</h4>
+<p>  可以在 <strong>BROWSE &gt; Repositories</strong> 里查看当前项目列表，我这里用 All-Projects 做下测试，理论上是要新建项目的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> <span class="string">&quot;ssh://admin@localhost:29418/All-Projects&quot;</span></span><br></pre></td></tr></table></figure>
+<p>  <strong>安装 Gerrit 提交钩子 commit-msg（必须！）</strong>。Gerrit 依赖 commit-msg 钩子实现以下功能：</p>
+<ol>
+<li>生成 Change-Id：每个提交头部自动添加唯一标识符，格式示例 <code>Change-Id: I7e5e94b9e6a4d8b8c4f3270a8c6e9d3b1a2f5e7d</code></li>
+<li>校验提交规范: 确保提交信息符合团队约定格式（如包含任务编号）</li>
+<li>防止直接推送: 强制推送到 refs/for/ 路径而非主分支</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> All-Projects</span><br><span class="line">curl -Lo .git/hooks/commit-msg http://localhost:8080/tools/hooks/commit-msg</span><br><span class="line"><span class="built_in">chmod</span> +x .git/hooks/commit-msg</span><br></pre></td></tr></table></figure>
+<p>  然后新建个js文件，写点代码并提交。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin HEAD:refs/for/refs/meta/config <span class="comment"># 提交到 refs/meta/config 分支</span></span><br></pre></td></tr></table></figure>
+<p>  然后在gerrit首页可以看到刚刚提交的代码，点击查看详情，可以看到代码审核的流程。</p>
+<p><img src="./ai-check/review.png" alt="测试review" /></p>
+<h3 id="22-插件安装和配置"><a class="markdownIt-Anchor" href="#22-插件安装和配置"></a> 2.2 插件安装和配置</h3>
+<p>  将 ai-code-review 插件克隆到本地。插件详情可参考<a target="_blank" rel="noopener" href="https://gerrit.googlesource.com/plugins/ai-code-review/">官方文档</a>。此插件可以使用不同的 AI Chat 服务（例如 ChatGPT 或 OLLAMA）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://gerrit.googlesource.com/plugins/ai-code-review</span><br></pre></td></tr></table></figure>
+<p>  安装 Java 和构建工具</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y openjdk-21-jdk maven  <span class="comment"># 官方文档说 11 就行，但是我实际上跑了后发现需要 JDK 21+</span></span><br></pre></td></tr></table></figure>
+<p>  进去项目目录构建 JAR 包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ai-code-review</span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
+<p>  当输出<font color=green><strong>BUILD BUILD SUCCESS</strong></font>时，表示构建成功。进入目录看下生成的包名。</p>
+<p><img src="./ai-check/jarname.png" alt="jar包" /></p>
+<p>  然后将生成的jar包复制到 gerrit 的 plugins 目录下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我这里容器名为 gerrit，JAR 文件在 target/ 目录</span></span><br><span class="line">docker <span class="built_in">cp</span> target/ai-code-review-3.11.0.jar gerrit:/var/gerrit/plugins/</span><br></pre></td></tr></table></figure>
+<p>  然后进入容器内看下插件列表，确认插件已经安装成功</p>
+<p><img src="./ai-check/jar.png" alt="插件列表" /></p>
+<p>  也可以在 gerrit 网页端查看插件启动情况</p>
+<p><img src="./ai-check/plugin.png" alt="插件列表" /></p>
+<p>  接着修改配置文件，在 gerrit 的 etc 目录下找到 gerrit.config 文件。但在这之前需要在 Gerrit 中创建一个 AI Code Review 用户，这个席位用于 AI 来使用进行代码评审。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi var/gerrit/etc/gerrit.config</span><br></pre></td></tr></table></figure>
+<p>  在文件里添加以下内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[plugin &quot;ai-code-review&quot;]</span><br><span class="line">  model = deepseek-v3                       </span><br><span class="line">  aiToken = ***                             </span><br><span class="line">  aiDomain = ***     </span><br><span class="line">  gerritUserName = AIReviewer               </span><br><span class="line">  aiType = ChatGPT                          </span><br><span class="line">  globalEnable = true                       。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>model(非必填)</strong>: 使用的模型</li>
+<li><strong>aiToken(必填)</strong>: AI模型的密钥</li>
+<li><strong>aiDomain(非必填)</strong>: 请求地址，默认是 <a target="_blank" rel="noopener" href="https://api.openai.com">https://api.openai.com</a></li>
+<li><strong>gerritUserName(必填)</strong>: AI Code Review 用户的 Gerrit 用户名。我这里创建的用户名为 AIReviewer</li>
+<li><strong>aiType(非必填)</strong>: AI类型，默认是 ChatGPT</li>
+<li><strong>globalEnable(非必填)</strong>: 是否全局启用，默认是 false, 表示插件将仅审核指定的仓库。如果不设置为true的话。需要添加enabledProjects参数，指定要运行的存储库，例如：“project1,project2,project3”。</li>
+</ul>
+<p>  更多字段配置参考<a target="_blank" rel="noopener" href="https://gerrit.googlesource.com/plugins/ai-code-review/">官方文档</a></p>
+<p>  这些都完成后，重启 gerrit 服务。然后修改下代码，写段明显有问题的代码，重新 commit 并 push 代码，看下 AI 代码评审的效果怎么样。</p>
+<p><img src="./ai-check/ai-review.png" alt="测试结果" /></p>
+<p>  可以看到 ai 审查代码的效果还是不错的。当然我这里是修改了插件的prompt，让它用中文生成评论，它默认是用英文回答的。</p>
+-->
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2025/04/09/aiCheck/" class="archive-article-date">
-        <time datetime="2025-04-09T03:46:14.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-09</time>
-</a>
 
+    
+    <div class="page-reward">
+      <a href="javascript:void(0);" class="page-reward-btn tooltip-top" target="_self">
+        <div class="tooltip tooltip-east">
+          <span class="tooltip-item">
+            赏
+          </span>
+          <span class="tooltip-content">
+            <span class="tooltip-text">
+              <span class="tooltip-inner">
+                <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i
+                    class="icon icon-quo-right"></i></p>
+                <div class="reward-box">
+                  
+                  <div class="reward-box-item">
+                    <img class="reward-img" src="/img/alipay.jpg">
+                    <span class="reward-type">支付宝</span>
+                  </div>
+                  
+                  
+                  <div class="reward-box-item">
+                    <img class="reward-img" src="/img/weixin.png">
+                    <span class="reward-type">微信</span>
+                  </div>
+                  
+                </div>
+              </span>
+            </span>
+          </span>
         </div>
-    	 
+      </a>
+    </div>
+    
 
-        <div class="article-info info-on-right">
+    
+    <div class="declare"> 
+      <ul class="post-copyright">
+        <li>
+          <strong>本文作者：</strong>
+          puppy
+        </li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="https://ispuppy.github.io/2025/04/09/aiCheck/" title="" target="_blank">https://ispuppy.github.io/2025/04/09/aiCheck/</a>
+        </li>
+        
+        <li>
+          <strong>版权声明： </strong>
           
-          
+          本BLOG上原创文章未经本人许可，不得用于商业用途及传统媒体。网络媒体转载请注明出处，否则属于侵权行为。
+        </li>
+        
+      </ul>
+    </div>
+    
 
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+    
+
+    
+
+    
+    
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <!-- <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a> -->
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="juejin share-sns" href="javascript:;" data-type="juejin">
+            <i class="icon icon-juejin"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=https://ispuppy.github.io/2025/04/09/aiCheck/" alt="微信分享二维码"> -->
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+
+    
+    <div class="clearfix"></div>
+  </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2025/03/20/massDataProcess/" class="archive-article-date">
-        <time datetime="2025-03-20T07:56:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-03-20</time>
-</a>
 
+
+<nav id="article-nav">
+  
+  
+    <a href="/2025/03/20/massDataProcess/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">前端如何处理计算密集型操作（数据量10w+）</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2025/03/20/massDataProcess/" target="_blank">前端如何处理计算密集型操作（数据量10w+）</a>
-  
-    </h1>
-  
-
-
-        <div class="article-info info-on-right">
-          
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ai-code-review"><span class="toc-number">1.</span> <span class="toc-text"> ai-code-review</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8-js-%E8%84%9A%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 使用 JS 脚本</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2025/02/28/linuxstudy/" class="archive-article-date">
-        <time datetime="2025-02-28T03:55:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-02-28</time>
-</a>
-
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2025/02/28/linuxstudy/" target="_blank">无文档Linux服务器部署文件与Nginx配置查找</a>
-  
-    </h1>
-  
+        
+    </div>
+</aside>
 
 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
-    
+
+
+
+
+
+
+
+
 
 
           </div>
@@ -319,8 +532,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,
