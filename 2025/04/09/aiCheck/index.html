@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/plugin.png">
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-review.png">
 <meta property="article:published_time" content="2025-04-09T03:46:14.784Z">
-<meta property="article:modified_time" content="2025-05-15T09:53:41.668Z">
+<meta property="article:modified_time" content="2025-05-15T11:11:36.167Z">
 <meta property="article:author" content="puppy">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
@@ -199,8 +199,8 @@
 <h2 id="1-使用-js-脚本"><a class="markdownIt-Anchor" href="#1-使用-js-脚本"></a> 1. 使用 JS 脚本</h2>
 <p>  这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。<br>
   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 <code>pre-commit</code> hooks,在 git 提交前执行这个脚本。整体流程如下：</p>
-<p><img src="flow.png" alt="流程图"></p>
 <span id="more"></span>
+<p><img src="flow.png" alt="流程图"></p>
 <p>  接下来我们来具体实现下代码。在项目根目录下新建一个pre-commit.js文件，这个文件就是我们的脚本。</p>
 <h3 id="11-校验暂存区代码"><a class="markdownIt-Anchor" href="#11-校验暂存区代码"></a> 1.1 校验暂存区代码</h3>
 <p>  通过 <code>git diff --cached</code> 验证是否存在待提交内容，如果没有改动则直接退出提交。</p>
