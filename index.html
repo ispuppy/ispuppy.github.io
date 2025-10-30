@@ -182,12 +182,75 @@
             
 
   
+    <article id="post-aiVueI18n" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="告别多语言地狱ai-vue-i18n让国际化开发变得简单"><a class="markdownIt-Anchor" href="#告别多语言地狱ai-vue-i18n让国际化开发变得简单"></a> 告别多语言地狱！AI-Vue-I18n让国际化开发变得简单</h1>
+<p>作为Vue开发者，你是否也经历过这样的痛苦？</p>
+<ul>
+<li>产品经理：“这个按钮文案要改一下” → 你需要修改5种语言文件</li>
+<li>测试同学：“日语翻译好像不太准确” → 你需要在代码中翻找对应的<code>$t()</code> key</li>
+<li>新功能上线：“为什么这里还是显示中文？” → 你忘记添加翻译了…</li>
+</ul>
+<p>今天给大家介绍一个能彻底解决这些痛点的神器：<strong>AI-Vue-I18n</strong>，一个基于AI的Vue多语言自动化工具。<a target="_blank" rel="noopener" href="https://github.com/ispuppy/ai-vue-i18n">地址在这里</a>，欢迎大家star。</p>
+    
+    <a class="article-more-a" href="/2025/10/30/aiVueI18n/#more">more >></a>
+    
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+    
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2025/10/30/aiVueI18n/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-aiCheck" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
   <div class="article-entry" itemprop="articleBody">
     
     <h1 id="ai-code-review"><a class="markdownIt-Anchor" href="#ai-code-review"></a> ai-code-review</h1>
+<p>  在日常开发中，我们经常会遇到一些问题，比如代码质量问题、安全问题等。如果我们每次都手动去检查，不仅效率低下，而且容易出错。<br>
+  所以我们可以利用 AI 来帮助我们检查代码，这样可以提高我们的效率<br>
+  那么，如何利用 AI 来检查代码呢？</p>
 <h2 id="1-使用-js-脚本"><a class="markdownIt-Anchor" href="#1-使用-js-脚本"></a> 1. 使用 JS 脚本</h2>
 <p>  这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。<br>
   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 <code>pre-commit</code> hooks,在 git 提交前执行这个脚本。整体流程如下：</p>

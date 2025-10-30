@@ -10,12 +10,12 @@
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="description" content="ai-code-review  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 pre-commit hooks,在 git 提交前执行这个脚本。整体流程如下：">
+  <meta name="description" content="ai-code-review   在日常开发中，我们经常会遇到一些问题，比如代码质量问题、安全问题等。如果我们每次都手动去检查，不仅效率低下，而且容易出错。   所以我们可以利用 AI 来帮助我们检查代码，这样可以提高我们的效率   那么，如何利用 AI 来检查代码呢？  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评">
 <meta property="og:type" content="article">
 <meta property="og:title" content="puppy">
 <meta property="og:url" content="https://ispuppy.github.io/2025/04/09/aiCheck/index.html">
 <meta property="og:site_name" content="puppy">
-<meta property="og:description" content="ai-code-review  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 pre-commit hooks,在 git 提交前执行这个脚本。整体流程如下：">
+<meta property="og:description" content="ai-code-review   在日常开发中，我们经常会遇到一些问题，比如代码质量问题、安全问题等。如果我们每次都手动去检查，不仅效率低下，而且容易出错。   所以我们可以利用 AI 来帮助我们检查代码，这样可以提高我们的效率   那么，如何利用 AI 来检查代码呢？  1. 使用 JS 脚本   这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/node-ai.png">
@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/plugin.png">
 <meta property="og:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/ai-review.png">
 <meta property="article:published_time" content="2025-04-09T03:46:14.784Z">
-<meta property="article:modified_time" content="2025-05-15T11:11:36.167Z">
+<meta property="article:modified_time" content="2025-05-16T02:55:31.320Z">
 <meta property="article:author" content="puppy">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ispuppy.github.io/2025/04/09/aiCheck/flow.png">
@@ -196,6 +196,9 @@
   <div class="article-entry" itemprop="articleBody">
     
     <h1 id="ai-code-review"><a class="markdownIt-Anchor" href="#ai-code-review"></a> ai-code-review</h1>
+<p>  在日常开发中，我们经常会遇到一些问题，比如代码质量问题、安全问题等。如果我们每次都手动去检查，不仅效率低下，而且容易出错。<br>
+  所以我们可以利用 AI 来帮助我们检查代码，这样可以提高我们的效率<br>
+  那么，如何利用 AI 来检查代码呢？</p>
 <h2 id="1-使用-js-脚本"><a class="markdownIt-Anchor" href="#1-使用-js-脚本"></a> 1. 使用 JS 脚本</h2>
 <p>  这种方法其实就是写一个简单的脚本，通过调用 OpenAI 的 API，将代码提交给 AI 进行评审。<br>
   这里我们需要使用 Node.js 来实现这个功能。利用 git 的 <code>pre-commit</code> hooks,在 git 提交前执行这个脚本。整体流程如下：</p>
@@ -231,7 +234,7 @@
 <p><img src="node-ai.png" alt="ai-review"></p>
 <p>  看来还是不错的，有效识别代码中的逻辑缺陷与语法隐患（如无限循环、变量误用等），同时当不满足提交条件后，也是直接终止了 commit。这里面其实比较关键的是 prompt 的内容，ai 评审的效果主要就是取决于它。</p>
 <h2 id="2-ai-pre-commit-reviewer-插件"><a class="markdownIt-Anchor" href="#2-ai-pre-commit-reviewer-插件"></a> 2. ai-pre-commit-reviewer 插件</h2>
-<p>  上面我们是通过 js 脚本来实现的，其实也可以通过现成插件来实现。原理和第一个方法是一样的，只不过是插件帮我们封装好了，我们只需要配置下即可。<a target="_blank" rel="noopener" href="https://github.com/ispuppy/ai-pre-commit-reviewer">插件地址</a></p>
+<p>  上面我们是通过 js 脚本来实现的，其实也可以通过现成插件来实现。原理和第一个方法是一样的，只不过是插件帮我们封装好了，我们只需要配置下即可。<a target="_blank" rel="noopener" href="https://github.com/ispuppy/ai-pre-commit-reviewer">插件地址</a>，欢迎大家star。</p>
 <h3 id="21-安装插件"><a class="markdownIt-Anchor" href="#21-安装插件"></a> 2.1 安装插件</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install ai-pre-commit-reviewer --save-dev</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装完成后执行</span></span><br><span class="line"></span><br><span class="line">npx add-ai-review <span class="comment">#添加执行逻辑到git pre-commit钩子中</span></span><br></pre></td></tr></table></figure>
 <h3 id="22-配置文件"><a class="markdownIt-Anchor" href="#22-配置文件"></a> 2.2 配置文件</h3>
@@ -241,6 +244,7 @@
 <p><img src="pre-commit.png" alt="插件效果"></p>
 <p>  也可以配合husky使用，进行语法检查后执行code review。</p>
 <p><img src="husky.png" alt="插件效果"></p>
+<p>  我这里也是更推荐大家使用这个，简单易上手。</p>
 <h2 id="3-gerrit-ai-code-review"><a class="markdownIt-Anchor" href="#3-gerrit-ai-code-review"></a> 3. gerrit + ai-code-review</h2>
 <p>  Gerrit 是由 Google 开发的代码审查管理系统，基于 Git 版本控制系统构建，主要特性包括：</p>
 <ul>
@@ -435,6 +439,15 @@
 
 
 <nav id="article-nav">
+  
+    <a href="/2025/10/30/aiVueI18n/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
   
   
     <a href="/2025/03/20/massDataProcess/" id="article-nav-older" class="article-nav-link-wrap">
